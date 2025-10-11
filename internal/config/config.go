@@ -13,9 +13,10 @@ import (
 
 type (
 	Config struct {
-		Server Server
-		LDAP   LDAPConfig
-		App    App
+		Server    Server
+		LDAP      LDAPConfig
+		GitBucket GitBucketConfig
+		App       App
 	}
 	Server struct {
 		Port           string
@@ -28,6 +29,10 @@ type (
 		Test bool
 	}
 	LDAPConfig struct {
+		URL string
+	}
+
+	GitBucketConfig struct {
 		URL string
 	}
 )
@@ -67,9 +72,14 @@ func parseConfigFile(folder string) error {
 
 func setFromEnv(cfg *Config) error {
 	cfg.LDAP.URL = os.Getenv("LDAP_URL")
+	cfg.GitBucket.URL = os.Getenv("GITBUCKET_URL")
 
 	if cfg.LDAP.URL == "" {
 		return errors.New("LDAP_URL environment variable is required")
+	}
+
+	if cfg.GitBucket.URL == "" {
+		return errors.New("GITBUCKET_URL environment variable is required")
 	}
 
 	return nil
