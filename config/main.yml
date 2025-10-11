@@ -1,0 +1,8 @@
+server:
+  port: 8070
+  maxHeaderBytes: 1
+  readTimeout: 7s
+  writeTimeout: 7s
+
+app:
+  test: true
