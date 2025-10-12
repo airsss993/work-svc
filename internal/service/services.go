@@ -1,11 +1,18 @@
 package service
 
 import (
+	"context"
+
 	"github.com/airsss993/work-svc/internal/config"
+	"github.com/airsss993/work-svc/internal/domain"
 )
 
 type Services struct {
 	StudentService StudentService
+}
+
+type RepositoryService interface {
+	GetRepositoryContent(ctx context.Context, userID string, path string) (domain.RepoContent, error)
 }
 
 type Repositories struct {

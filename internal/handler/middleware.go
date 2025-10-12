@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func corsMiddleware(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "http://localhost:8080")
+func (h *Handler) corsMiddleware(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", h.cfg.GitBucket.URL)
 	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	c.Header("Access-Control-Allow-Credentials", "true")

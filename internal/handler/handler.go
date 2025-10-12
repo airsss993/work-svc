@@ -25,7 +25,7 @@ func (h *Handler) Init() *gin.Engine {
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
-		corsMiddleware,
+		h.corsMiddleware,
 	)
 
 	h.initAPI(router)
