@@ -21,3 +21,28 @@ func (h *Handler) getITGroups(c *gin.Context) {
 		"total":  len(groups),
 	})
 }
+
+func (h *Handler) getGroupStudents(c *gin.Context) {
+	groupName := c.Param("groupName")
+
+	if groupName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "group name is required",
+		})
+		return
+	}
+
+	students, err := h.services.GroupService.GetGroupStudents(c.Request.Context(), groupName)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"students": students,
+		"total":    len(students),
+	})
+}

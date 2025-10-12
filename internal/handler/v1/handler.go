@@ -32,6 +32,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		groups := v1.Group("/groups")
 		{
 			groups.GET("/it", h.getITGroups)
+			groups.GET("/:groupName/students", h.getGroupStudents)
 		}
 	}
 }

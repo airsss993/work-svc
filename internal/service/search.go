@@ -12,7 +12,7 @@ import (
 )
 
 type StudentService interface {
-	SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error)
+	SearchStudents(ctx context.Context, query string) ([]domain.Student, error)
 }
 
 type StudentServiceImpl struct {
@@ -27,17 +27,17 @@ func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentServiceIm
 	}
 }
 
-func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error) {
+func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) ([]domain.Student, error) {
 	if ctx.Err() != nil {
-		return []domain.StudentInfo{}, nil
+		return []domain.Student{}, nil
 	}
 
 	if query == "" {
-		return []domain.StudentInfo{}, nil
+		return []domain.Student{}, nil
 	}
 
 	if s.appCfg.Test {
-		return []domain.StudentInfo{
+		return []domain.Student{
 			{ID: "i24s0291", Username: "Коломацкий Иван"},
 			{ID: "i24s0002", Username: "Джапаридзе Артем"},
 		}, nil
@@ -74,13 +74,13 @@ func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) (
 		return nil, fmt.Errorf("search failed")
 	}
 
-	var students []domain.StudentInfo
+	var students []domain.Student
 	for _, entry := range sr.Entries {
 		uid := entry.GetAttributeValue("uid")
 		cn := entry.GetAttributeValue("cn")
 
 		if !strings.HasPrefix(uid, "t") && uid != "" && cn != "" {
-			students = append(students, domain.StudentInfo{
+			students = append(students, domain.Student{
 				ID:       uid,
 				Username: cn,
 			})
