@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"strings"
+	"os"
 
 	"github.com/airsss993/work-svc/internal/config"
 	"github.com/airsss993/work-svc/internal/domain"
@@ -64,7 +64,7 @@ func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) (
 		0,
 		false,
 		filter,
-		[]string{"uid", "cn"},
+		[]string{"uid", "cn", "employeeNumber"},
 		nil,
 	)
 
@@ -78,11 +78,20 @@ func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) (
 	for _, entry := range sr.Entries {
 		uid := entry.GetAttributeValue("uid")
 		cn := entry.GetAttributeValue("cn")
+		en := entry.GetAttributeValue("employeeNumber")
 
-		if !strings.HasPrefix(uid, "t") && uid != "" && cn != "" {
+		if uid != "" && cn != "" && en != "" {
+			photoURL := ""
+			photoPath := fmt.Sprintf("./photos/%s.png", en)
+
+			if _, err := os.Stat(photoPath); err == nil {
+				photoURL = fmt.Sprintf("/api/photos/%s.png", en)
+			}
+
 			students = append(students, domain.Student{
 				ID:       uid,
 				Username: cn,
+				PhotoURL: photoURL,
 			})
 		}
 	}
