@@ -11,24 +11,19 @@ import (
 	"github.com/go-ldap/ldap/v3"
 )
 
-type StudentService interface {
-	SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error)
-	SearchTeachers(ctx context.Context, query string) ([]domain.StudentInfo, error)
-}
-
-type StudentServiceImpl struct {
+type StudentLDAPService struct {
 	cfg    *config.Config
 	appCfg *config.App
 }
 
-func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentServiceImpl {
-	return &StudentServiceImpl{
+func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentLDAPService {
+	return &StudentLDAPService{
 		cfg:    cfg,
 		appCfg: appCfg,
 	}
 }
 
-func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error) {
+func (s *StudentLDAPService) SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error) {
 	if ctx.Err() != nil {
 		return []domain.StudentInfo{}, nil
 	}

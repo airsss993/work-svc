@@ -33,7 +33,8 @@ type (
 	}
 
 	GitBucketConfig struct {
-		URL string
+		URL    string
+		APIKey string
 	}
 )
 
@@ -73,6 +74,7 @@ func parseConfigFile(folder string) error {
 func setFromEnv(cfg *Config) error {
 	cfg.LDAP.URL = os.Getenv("LDAP_URL")
 	cfg.GitBucket.URL = os.Getenv("GITBUCKET_URL")
+	cfg.GitBucket.APIKey = os.Getenv("GITBUCKET_API_KEY")
 
 	if cfg.LDAP.URL == "" {
 		return errors.New("LDAP_URL environment variable is required")
@@ -80,6 +82,9 @@ func setFromEnv(cfg *Config) error {
 
 	if cfg.GitBucket.URL == "" {
 		return errors.New("GITBUCKET_URL environment variable is required")
+	}
+	if cfg.GitBucket.APIKey == "" {
+		return errors.New("GITBUCKET_API_KEY environment variable is required")
 	}
 
 	return nil
