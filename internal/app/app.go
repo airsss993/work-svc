@@ -6,6 +6,7 @@ import (
 	"github.com/airsss993/work-svc/internal/config"
 	handlers "github.com/airsss993/work-svc/internal/handler"
 	"github.com/airsss993/work-svc/internal/server"
+	"github.com/airsss993/work-svc/internal/service"
 	"github.com/airsss993/work-svc/pkg/logger"
 )
 
@@ -15,7 +16,11 @@ func Run() {
 		logger.Fatal(err)
 	}
 
-	handler := handlers.NewHandler(nil, cfg)
+	services := service.NewServices(service.Deps{
+		Config: cfg,
+	})
+
+	handler := handlers.NewHandler(services, cfg)
 
 	router := handler.Init()
 

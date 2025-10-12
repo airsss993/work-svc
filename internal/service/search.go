@@ -13,7 +13,6 @@ import (
 
 type StudentService interface {
 	SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error)
-	SearchTeachers(ctx context.Context, query string) ([]domain.StudentInfo, error)
 }
 
 type StudentServiceImpl struct {

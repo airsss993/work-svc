@@ -24,5 +24,7 @@ type Deps struct {
 }
 
 func NewServices(deps Deps) *Services {
-	return &Services{}
+	return &Services{
+		StudentService: NewStudentService(deps.Config, &deps.Config.App),
+	}
 }

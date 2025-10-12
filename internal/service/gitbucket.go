@@ -18,5 +18,5 @@ func NewGitBucketService(cfg *config.Config) *GitBucketService {
 }
 
 func (g *GitBucketService) GetRepositoryContent(ctx context.Context, userID string, path string) (domain.RepoContent, error) {
-
+	return domain.RepoContent{}, nil
 }

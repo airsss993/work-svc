@@ -16,7 +16,7 @@ func (h *Handler) searchStudents(c *gin.Context) {
 		return
 	}
 
-	teachers, err := h.services.StudentService.SearchTeachers(
+	students, err := h.services.StudentService.SearchStudents(
 		c.Request.Context(),
 		req.Query,
 	)
@@ -29,7 +29,7 @@ func (h *Handler) searchStudents(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"students": teachers,
-		"total":    len(teachers),
+		"students": students,
+		"total":    len(students),
 	})
 }
