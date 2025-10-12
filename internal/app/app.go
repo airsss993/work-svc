@@ -3,9 +3,11 @@ package app
 import (
 	"fmt"
 
+	"github.com/airsss993/work-svc/internal/client"
 	"github.com/airsss993/work-svc/internal/config"
 	handlers "github.com/airsss993/work-svc/internal/handler"
 	"github.com/airsss993/work-svc/internal/server"
+	"github.com/airsss993/work-svc/internal/service"
 	"github.com/airsss993/work-svc/pkg/logger"
 )
 
@@ -14,8 +16,14 @@ func Run() {
 	if err != nil {
 		logger.Fatal(err)
 	}
+	gitClient := client.NewGitBucketClient(cfg)
+	services := service.NewServices(service.Deps{
+		Repos:     nil,
+		GitClient: gitClient,
+		Config:    cfg,
+	})
 
-	handler := handlers.NewHandler(nil, cfg)
+	handler := handlers.NewHandler(services, cfg)
 
 	router := handler.Init()
 

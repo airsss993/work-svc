@@ -61,6 +61,10 @@ func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, path 
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
 	var content []RepositoryContentResp
 	if err := json.Unmarshal(body, &content); err != nil {
 		return nil, err

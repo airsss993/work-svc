@@ -28,6 +28,11 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		{
 			search.POST("/students", h.searchStudents)
 		}
+
+		repository := v1.Group("/repos")
+		{
+			repository.GET("/:owner/contents", h.getRepoContent)
+		}
 	}
 }
 
