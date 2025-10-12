@@ -9,6 +9,7 @@ import (
 
 type Services struct {
 	StudentService StudentService
+	GroupService   GroupService
 }
 
 type RepositoryService interface {
@@ -26,5 +27,6 @@ type Deps struct {
 func NewServices(deps Deps) *Services {
 	return &Services{
 		StudentService: NewStudentService(deps.Config, &deps.Config.App),
+		GroupService:   NewGroupService(deps.Config, &deps.Config.App),
 	}
 }
