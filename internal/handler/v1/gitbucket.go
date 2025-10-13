@@ -7,8 +7,8 @@ import (
 )
 
 func (h *Handler) getRepoContent(c *gin.Context) {
-	owner := c.Param("owner")
-	if owner == "" {
+	userID := c.Param("user_id")
+	if userID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "owner is required",
 		})
@@ -17,7 +17,7 @@ func (h *Handler) getRepoContent(c *gin.Context) {
 
 	path := c.Query("path")
 
-	content, err := h.services.GitBucketService.GetRepositoryContent(c.Request.Context(), owner, path)
+	content, err := h.services.GitBucketService.GetRepositoryContent(c.Request.Context(), userID, path)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

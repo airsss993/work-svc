@@ -20,8 +20,8 @@ type StudentServiceImpl struct {
 	appCfg *config.App
 }
 
-func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentLDAPService {
-	return &StudentLDAPService{
+func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentServiceImpl {
+	return &StudentServiceImpl{
 		cfg:    cfg,
 		appCfg: appCfg,
 	}

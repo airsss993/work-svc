@@ -26,7 +26,8 @@ type (
 	}
 
 	App struct {
-		Test bool
+		Test    bool
+		WorkURL string
 	}
 	LDAPConfig struct {
 		URL string
@@ -75,6 +76,7 @@ func setFromEnv(cfg *Config) error {
 	cfg.LDAP.URL = os.Getenv("LDAP_URL")
 	cfg.GitBucket.URL = os.Getenv("GITBUCKET_URL")
 	cfg.GitBucket.APIKey = os.Getenv("GITBUCKET_API_KEY")
+	cfg.App.WorkURL = os.Getenv("WORK_URL")
 
 	if cfg.LDAP.URL == "" {
 		return errors.New("LDAP_URL environment variable is required")

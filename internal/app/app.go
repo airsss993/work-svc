@@ -17,8 +17,6 @@ func Run() {
 		logger.Fatal(err)
 	}
 
-	services := service.NewServices(service.Deps{
-		Config: cfg,
 	gitClient := client.NewGitBucketClient(cfg)
 	services := service.NewServices(service.Deps{
 		Repos:     nil,

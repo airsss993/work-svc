@@ -9,13 +9,9 @@ import (
 )
 
 type Services struct {
-	StudentService StudentService
-	GroupService   GroupService
 	StudentService   StudentService
+	GroupService     GroupService
 	GitBucketService RepositoryService
-}
-type StudentService interface {
-	SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error)
 }
 
 type RepositoryService interface {
@@ -32,14 +28,13 @@ type Deps struct {
 }
 
 func NewServices(deps Deps) *Services {
-	return &Services{
-		StudentService: NewStudentService(deps.Config, &deps.Config.App),
-		GroupService:   NewGroupService(deps.Config, &deps.Config.App),
 	studentService := NewStudentService(deps.Config, &deps.Config.App)
+	groupService := NewGroupService(deps.Config, &deps.Config.App)
 	gitBucketService := NewGitBucketService(deps.GitClient, deps.Config)
 
 	return &Services{
 		StudentService:   studentService,
+		GroupService:     groupService,
 		GitBucketService: gitBucketService,
 	}
 }
