@@ -188,11 +188,16 @@ func (s *GroupServiceImpl) GetGroupStudents(ctx context.Context, groupName strin
 		en := entry.GetAttributeValue("employeeNumber")
 
 		if uid != "" && cn != "" && en != "" {
-			photoURL := ""
+			var photoURL string
 			photoPath := fmt.Sprintf("./photos/%s.png", en)
 
 			if _, err := os.Stat(photoPath); err == nil {
 				photoURL = fmt.Sprintf("/api/photos/%s.png", en)
+			} else if en[0:2] == "23" {
+				photoPathAlt := fmt.Sprintf("./photos/20%s%s.png", en[0:2], en[3:])
+				if _, err := os.Stat(photoPathAlt); err == nil {
+					photoURL = fmt.Sprintf("/api/photos/20%s%s.png", en[0:2], en[3:])
+				}
 			}
 
 			students = append(students, domain.Student{
