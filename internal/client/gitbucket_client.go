@@ -33,7 +33,13 @@ func NewGitBucketClient(cfg *config.Config) *GitBucketClient {
 }
 
 func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, path string) ([]RepositoryContentResp, error) {
-	url := fmt.Sprintf("%s/api/v3/repos/%s/Work/contents/%s", c.cfg.GitBucket.URL, owner, path)
+	baseURL := fmt.Sprintf("%s/api/v3/repos/%s/Work/contents", c.cfg.GitBucket.URL, owner)
+
+	if path != "" {
+		baseURL = baseURL + "/" + path
+	}
+
+	url := baseURL
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
@@ -41,6 +47,7 @@ func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, path 
 	}
 
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "token "+c.cfg.GitBucket.APIKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -52,6 +59,10 @@ func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, path 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
 	}
 
 	var content []RepositoryContentResp

@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 
+	"github.com/airsss993/work-svc/internal/client"
 	"github.com/airsss993/work-svc/internal/config"
 	handlers "github.com/airsss993/work-svc/internal/handler"
 	"github.com/airsss993/work-svc/internal/server"
@@ -18,6 +19,11 @@ func Run() {
 
 	services := service.NewServices(service.Deps{
 		Config: cfg,
+	gitClient := client.NewGitBucketClient(cfg)
+	services := service.NewServices(service.Deps{
+		Repos:     nil,
+		GitClient: gitClient,
+		Config:    cfg,
 	})
 
 	handler := handlers.NewHandler(services, cfg)

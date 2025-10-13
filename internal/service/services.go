@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/airsss993/work-svc/internal/client"
 	"github.com/airsss993/work-svc/internal/config"
 	"github.com/airsss993/work-svc/internal/domain"
 )
@@ -10,6 +11,11 @@ import (
 type Services struct {
 	StudentService StudentService
 	GroupService   GroupService
+	StudentService   StudentService
+	GitBucketService RepositoryService
+}
+type StudentService interface {
+	SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error)
 }
 
 type RepositoryService interface {
@@ -20,13 +26,20 @@ type Repositories struct {
 }
 
 type Deps struct {
-	Repos  *Repositories
-	Config *config.Config
+	Repos     *Repositories
+	GitClient *client.GitBucketClient
+	Config    *config.Config
 }
 
 func NewServices(deps Deps) *Services {
 	return &Services{
 		StudentService: NewStudentService(deps.Config, &deps.Config.App),
 		GroupService:   NewGroupService(deps.Config, &deps.Config.App),
+	studentService := NewStudentService(deps.Config, &deps.Config.App)
+	gitBucketService := NewGitBucketService(deps.GitClient, deps.Config)
+
+	return &Services{
+		StudentService:   studentService,
+		GitBucketService: gitBucketService,
 	}
 }
