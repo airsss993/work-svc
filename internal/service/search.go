@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"strings"
+	"os"
 
 	"github.com/airsss993/work-svc/internal/config"
 	"github.com/airsss993/work-svc/internal/domain"
@@ -11,7 +11,11 @@ import (
 	"github.com/go-ldap/ldap/v3"
 )
 
-type StudentLDAPService struct {
+type StudentService interface {
+	SearchStudents(ctx context.Context, query string) ([]domain.Student, error)
+}
+
+type StudentServiceImpl struct {
 	cfg    *config.Config
 	appCfg *config.App
 }
@@ -23,17 +27,17 @@ func NewStudentService(cfg *config.Config, appCfg *config.App) *StudentLDAPServi
 	}
 }
 
-func (s *StudentLDAPService) SearchStudents(ctx context.Context, query string) ([]domain.StudentInfo, error) {
+func (s *StudentServiceImpl) SearchStudents(ctx context.Context, query string) ([]domain.Student, error) {
 	if ctx.Err() != nil {
-		return []domain.StudentInfo{}, nil
+		return []domain.Student{}, nil
 	}
 
 	if query == "" {
-		return []domain.StudentInfo{}, nil
+		return []domain.Student{}, nil
 	}
 
 	if s.appCfg.Test {
-		return []domain.StudentInfo{
+		return []domain.Student{
 			{ID: "i24s0291", Username: "Коломацкий Иван"},
 			{ID: "i24s0002", Username: "Джапаридзе Артем"},
 		}, nil
@@ -60,7 +64,7 @@ func (s *StudentLDAPService) SearchStudents(ctx context.Context, query string) (
 		0,
 		false,
 		filter,
-		[]string{"uid", "cn"},
+		[]string{"uid", "cn", "employeeNumber"},
 		nil,
 	)
 
@@ -70,15 +74,24 @@ func (s *StudentLDAPService) SearchStudents(ctx context.Context, query string) (
 		return nil, fmt.Errorf("search failed")
 	}
 
-	var students []domain.StudentInfo
+	var students []domain.Student
 	for _, entry := range sr.Entries {
 		uid := entry.GetAttributeValue("uid")
 		cn := entry.GetAttributeValue("cn")
+		en := entry.GetAttributeValue("employeeNumber")
 
-		if !strings.HasPrefix(uid, "t") && uid != "" && cn != "" {
-			students = append(students, domain.StudentInfo{
+		if uid != "" && cn != "" && en != "" {
+			photoURL := ""
+			photoPath := fmt.Sprintf("./photos/%s.png", en)
+
+			if _, err := os.Stat(photoPath); err == nil {
+				photoURL = fmt.Sprintf("/api/photos/%s.png", en)
+			}
+
+			students = append(students, domain.Student{
 				ID:       uid,
 				Username: cn,
+				PhotoURL: photoURL,
 			})
 		}
 	}

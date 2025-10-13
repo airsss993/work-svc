@@ -28,6 +28,8 @@ func (h *Handler) Init() *gin.Engine {
 		h.corsMiddleware,
 	)
 
+	router.Static("/api/photos", "./photos")
+
 	h.initAPI(router)
 
 	return router

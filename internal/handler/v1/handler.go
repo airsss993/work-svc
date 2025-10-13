@@ -29,6 +29,11 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 			search.POST("/students", h.searchStudents)
 		}
 
+		groups := v1.Group("/groups")
+		{
+			groups.GET("/it", h.getITGroups)
+			groups.GET("/:groupName/students", h.getGroupStudents)
+
 		repository := v1.Group("/repos")
 		{
 			repository.GET("/:owner/contents", h.getRepoContent)

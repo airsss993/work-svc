@@ -9,6 +9,8 @@ import (
 )
 
 type Services struct {
+	StudentService StudentService
+	GroupService   GroupService
 	StudentService   StudentService
 	GitBucketService RepositoryService
 }
@@ -30,6 +32,9 @@ type Deps struct {
 }
 
 func NewServices(deps Deps) *Services {
+	return &Services{
+		StudentService: NewStudentService(deps.Config, &deps.Config.App),
+		GroupService:   NewGroupService(deps.Config, &deps.Config.App),
 	studentService := NewStudentService(deps.Config, &deps.Config.App)
 	gitBucketService := NewGitBucketService(deps.GitClient, deps.Config)
 
