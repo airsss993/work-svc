@@ -40,6 +40,12 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 			repository.GET("/:user_id/contents", h.getRepoContent)
 		}
 	}
+
+	repos := api.Group("/repos/:owner/:repo/branches/:ref")
+	{
+		repos.GET("/html/*filepath", h.getHTMLProxy)
+		repos.GET("/raw/*filepath", h.getRawProxy)
+	}
 }
 
 func (h *Handler) ping(c *gin.Context) {
