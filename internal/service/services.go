@@ -12,6 +12,7 @@ type Services struct {
 	StudentService   StudentService
 	GroupService     GroupService
 	GitBucketService RepositoryService
+	ProxyService     *ProxyService
 }
 
 type RepositoryService interface {
@@ -31,10 +32,12 @@ func NewServices(deps Deps) *Services {
 	studentService := NewStudentService(deps.Config, &deps.Config.App)
 	groupService := NewGroupService(deps.Config, &deps.Config.App)
 	gitBucketService := NewGitBucketService(deps.GitClient, deps.Config)
+	proxyService := NewProxyService(deps.GitClient)
 
 	return &Services{
 		StudentService:   studentService,
 		GroupService:     groupService,
 		GitBucketService: gitBucketService,
+		ProxyService:     proxyService,
 	}
 }
