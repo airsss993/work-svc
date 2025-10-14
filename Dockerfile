@@ -23,4 +23,6 @@ WORKDIR /app
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/work-svc ./work-svc
 
+EXPOSE 8070
+
 ENTRYPOINT ["./work-svc"]
