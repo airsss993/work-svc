@@ -101,3 +101,38 @@ func (c *GitBucketClient) GetFileContent(ctx context.Context, owner, repo, ref, 
 
 	return body, nil
 }
+
+func (c *GitBucketClient) GetRepositoryInfo(ctx context.Context, owner, repo string) (*RepositoryInfoResp, error) {
+	url := fmt.Sprintf("%s/api/v3/repos/%s/%s", c.cfg.GitBucket.URL, owner, repo)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "token "+c.cfg.GitBucket.APIKey)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var repoInfo RepositoryInfoResp
+	if err := json.Unmarshal(body, &repoInfo); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &repoInfo, nil
+}

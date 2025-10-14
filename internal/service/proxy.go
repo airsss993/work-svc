@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path"
 	"strings"
+	"sync"
 
 	"github.com/airsss993/work-svc/internal/client"
 	"golang.org/x/net/html"
@@ -13,6 +14,7 @@ import (
 
 type ProxyService struct {
 	gitbucketClient *client.GitBucketClient
+	branchCache     sync.Map
 }
 
 func NewProxyService(gitbucketClient *client.GitBucketClient) *ProxyService {
@@ -26,7 +28,9 @@ func (p *ProxyService) GetHTMLWithBase(ctx context.Context, owner, repo, ref, fi
 		return nil, fmt.Errorf("file path is required")
 	}
 
-	content, err := p.gitbucketClient.GetFileContent(ctx, owner, repo, ref, filePath)
+	resolvedRef := p.resolveRef(ctx, owner, repo, ref)
+
+	content, err := p.gitbucketClient.GetFileContent(ctx, owner, repo, resolvedRef, filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get file content: %w", err)
 	}
@@ -65,7 +69,9 @@ func (p *ProxyService) GetRawFile(ctx context.Context, owner, repo, ref, filePat
 		return nil, fmt.Errorf("file path is required")
 	}
 
-	content, err := p.gitbucketClient.GetFileContent(ctx, owner, repo, ref, filePath)
+	resolvedRef := p.resolveRef(ctx, owner, repo, ref)
+
+	content, err := p.gitbucketClient.GetFileContent(ctx, owner, repo, resolvedRef, filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get file content: %w", err)
 	}
@@ -108,4 +114,36 @@ func findHead(n *html.Node) *html.Node {
 	}
 
 	return nil
+}
+
+func (p *ProxyService) getDefaultBranch(ctx context.Context, owner, repo string) (string, error) {
+	cacheKey := fmt.Sprintf("%s/%s", owner, repo)
+
+	if cached, ok := p.branchCache.Load(cacheKey); ok {
+		return cached.(string), nil
+	}
+
+	repoInfo, err := p.gitbucketClient.GetRepositoryInfo(ctx, owner, repo)
+	if err != nil {
+		return "", fmt.Errorf("failed to get repository info: %w", err)
+	}
+
+	p.branchCache.Store(cacheKey, repoInfo.DefaultBranch)
+
+	return repoInfo.DefaultBranch, nil
+}
+
+func (p *ProxyService) resolveRef(ctx context.Context, owner, repo, ref string) string {
+	if ref == "main" || ref == "master" {
+		defaultBranch, err := p.getDefaultBranch(ctx, owner, repo)
+		if err != nil {
+			return ref
+		}
+
+		if defaultBranch != ref {
+			return defaultBranch
+		}
+	}
+
+	return ref
 }
