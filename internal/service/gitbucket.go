@@ -54,3 +54,39 @@ func (g *GitBucketService) GetRepositoryContent(ctx context.Context, owner, path
 
 	return repoContent, nil
 }
+
+func (g *GitBucketService) GetCommitsList(ctx context.Context, owner, repo string, perPage, page int) (domain.CommitResp, error) {
+	if owner == "" {
+		return domain.CommitResp{}, fmt.Errorf("owner is required")
+	}
+
+	commits, err := g.gitbucketClient.GetCommitsList(ctx, owner, repo, perPage, page)
+	if err != nil {
+		return domain.CommitResp{}, fmt.Errorf("failed to get commit list: %w", err)
+	}
+
+	var result domain.CommitResp
+
+	result.Count = len(commits)
+
+	result.Commits = make([]domain.Commit, 0, len(commits))
+
+	for _, c := range commits {
+		files := make([]domain.CommitFile, 0, len(c.Files))
+		for _, f := range c.Files {
+			files = append(files, domain.CommitFile{
+				Filename: f.Filename,
+			})
+		}
+
+		commitShort := domain.Commit{
+			Message: c.Commit.Message,
+			Date:    c.Commit.Author.Date,
+			Files:   files,
+		}
+
+		result.Commits = append(result.Commits, commitShort)
+	}
+
+	return result, nil
+}
