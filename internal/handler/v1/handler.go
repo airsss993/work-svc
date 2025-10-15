@@ -40,6 +40,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		{
 			repository.GET("/:owner/contents", h.getRepoContent)
 			repository.GET("/:owner/:repo/commits", h.getListCommits)
+			repository.GET("/:owner/:repo/contents", h.getRepoContentWithDates)
 		}
 	}
 
