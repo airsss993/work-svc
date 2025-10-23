@@ -22,6 +22,7 @@ func NewHandler(services *service.Services, cfg *config.Config) *Handler {
 
 func (h *Handler) Init(api *gin.RouterGroup) {
 	api.GET("/ping", h.ping)
+
 	v1 := api.Group("/v1")
 	{
 		search := v1.Group("/search")
@@ -37,7 +38,9 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 
 		repository := v1.Group("/repos")
 		{
-			repository.GET("/:user_id/contents", h.getRepoContent)
+			repository.GET("/:owner/contents", h.getRepoContent)
+			repository.GET("/:owner/:repo/commits", h.getListCommits)
+			repository.GET("/:owner/:repo/contents", h.getRepoContentWithDates)
 		}
 	}
 
