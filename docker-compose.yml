@@ -2,7 +2,7 @@ name: new-work
 
 services:
   work-svc:
-    image: airsss/work-svc:v1.0
+    image: airsss/work-svc:latest
     container_name: work-svc
     ports:
       - "8070:8070"
@@ -24,7 +24,7 @@ services:
       - work-network
 
   web:
-    image: airsss/work-web:v1.0
+    image: airsss/work-web:latest
     container_name: work-web
     restart: unless-stopped
     ports:

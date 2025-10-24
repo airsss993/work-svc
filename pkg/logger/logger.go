@@ -25,10 +25,6 @@ func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 
-func Debug(msg string) {
-	Logger.Debug().Msg(msg)
-}
-
 func Info(msg string) {
 	Logger.Info().Msg(msg)
 }

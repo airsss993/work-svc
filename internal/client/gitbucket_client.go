@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/airsss993/work-svc/internal/config"
+	"github.com/airsss993/work-svc/pkg/logger"
 )
 
 type GitBucketClient struct {
@@ -18,11 +19,11 @@ type GitBucketClient struct {
 
 func NewGitBucketClient(cfg *config.Config) *GitBucketClient {
 	httpClient := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 60 * time.Second,
 		Transport: &http.Transport{
 			MaxIdleConns:        100,
 			MaxIdleConnsPerHost: 10,
-			IdleConnTimeout:     90 * time.Second,
+			IdleConnTimeout:     60 * time.Second,
 		},
 	}
 
@@ -161,7 +162,9 @@ func (c *GitBucketClient) GetCommitsList(ctx context.Context, owner, repo string
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return CommitListResp{}, fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
+		err := fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
+		logger.Error(fmt.Errorf("GetCommitsList failed for %s/%s: %w", owner, repo, err))
+		return CommitListResp{}, err
 	}
 
 	var commits CommitListResp

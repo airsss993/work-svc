@@ -9,6 +9,7 @@ import (
 	"github.com/airsss993/work-svc/internal/client"
 	"github.com/airsss993/work-svc/internal/config"
 	"github.com/airsss993/work-svc/internal/domain"
+	"github.com/airsss993/work-svc/pkg/logger"
 )
 
 type GitBucketService struct {
@@ -60,11 +61,13 @@ func (g *GitBucketService) GetRepositoryContent(ctx context.Context, owner, path
 func (g *GitBucketService) GetRepositoryContentWithDates(ctx context.Context, owner, repo, path string) (domain.RepoContent, error) {
 	repoContent, err := g.gitbucketClient.GetRepositoryContent(ctx, owner, path)
 	if err != nil {
+		logger.Error(fmt.Errorf("GetRepositoryContent failed for %s/%s path=%s: %w", owner, repo, path, err))
 		return domain.RepoContent{}, fmt.Errorf("failed to get repo content: %w", err)
 	}
 
 	repoCommits, err := g.gitbucketClient.GetCommitsList(ctx, owner, repo, 500, 1)
 	if err != nil {
+		logger.Error(fmt.Errorf("GetCommitsList failed for %s/%s: %w", owner, repo, err))
 		return domain.RepoContent{}, fmt.Errorf("failed to get repo commits: %w", err)
 	}
 

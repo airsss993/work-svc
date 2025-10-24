@@ -32,7 +32,7 @@ func (h *Handler) getHTMLProxy(c *gin.Context) {
 		return
 	}
 
-	baseURL := fmt.Sprintf("/api/repos/%s/%s/branches/%s/raw", owner, repo, ref)
+	baseURL := fmt.Sprintf("/api/v1/repos/%s/%s/branches/%s/raw", owner, repo, ref)
 
 	content, err := h.services.ProxyService.GetHTMLWithBase(
 		c.Request.Context(),
