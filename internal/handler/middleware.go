@@ -7,7 +7,17 @@ import (
 )
 
 func (h *Handler) corsMiddleware(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", h.cfg.App.WorkURL)
+	allowedOrigins := map[string]bool{
+		h.cfg.App.WebURL:        true,
+		"http://localhost:5172": true,
+	}
+
+	origin := c.Request.Header.Get("Origin")
+
+	if allowedOrigins[origin] {
+		c.Header("Access-Control-Allow-Origin", origin)
+	}
+
 	c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	c.Header("Access-Control-Allow-Credentials", "true")

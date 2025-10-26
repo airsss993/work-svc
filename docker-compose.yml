@@ -6,11 +6,13 @@ services:
     container_name: work-svc
     ports:
       - "8070:8070"
+    env_file:
+      - .env
     environment:
+      - WEB_URL=${WEB_URL}
       - LDAP_URL=${LDAP_URL}
       - GITBUCKET_URL=${GITBUCKET_URL}
       - GITBUCKET_API_KEY=${GITBUCKET_API_KEY}
-      - WORK_URL=${WORK_URL}
     volumes:
       - ./photos:/app/photos
     restart: unless-stopped
@@ -23,7 +25,12 @@ services:
     networks:
       - work-network
 
-  web:
+  work-web:
+    build:
+      context: ./work-rework
+      dockerfile: Dockerfile
+      args:
+        - API_BASE_URL=${API_BASE_URL}
     image: airsss/work-web:latest
     container_name: work-web
     restart: unless-stopped
