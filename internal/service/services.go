@@ -19,6 +19,7 @@ type RepositoryService interface {
 	GetRepositoryContent(ctx context.Context, userID string, path string) (domain.RepoContent, error)
 	GetCommitsList(ctx context.Context, owner, repo string, perPage, page int) (domain.CommitResp, error)
 	GetRepositoryContentWithDates(ctx context.Context, owner, repo, path string) (domain.RepoContent, error)
+	GetUserRepositories(ctx context.Context, owner string) (domain.UserRepositoriesResp, error)
 }
 
 type Repositories struct {

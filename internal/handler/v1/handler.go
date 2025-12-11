@@ -38,6 +38,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 
 		repository := v1.Group("/repos")
 		{
+			repository.GET("/:owner", h.getUserRepositories)
 			repository.GET("/:owner/:repo/commits", h.getListCommits)
 			repository.GET("/:owner/:repo/contents", h.getRepoContentWithDates)
 			repository.GET("/:owner/:repo/branches/:ref/html/*filepath", h.getHTMLProxy)

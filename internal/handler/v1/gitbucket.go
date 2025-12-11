@@ -114,3 +114,23 @@ func (h *Handler) getRepoContentWithDates(c *gin.Context) {
 
 	c.JSON(http.StatusOK, content)
 }
+
+func (h *Handler) getUserRepositories(c *gin.Context) {
+	owner := c.Param("owner")
+	if owner == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "owner is required",
+		})
+		return
+	}
+
+	repositories, err := h.services.GitBucketService.GetUserRepositories(c.Request.Context(), owner)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, repositories)
+}

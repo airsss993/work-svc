@@ -173,3 +173,38 @@ func (c *GitBucketClient) GetCommitsList(ctx context.Context, owner, repo string
 	}
 	return commits, nil
 }
+
+func (c *GitBucketClient) GetUserRepositories(ctx context.Context, owner string) ([]RepositoryInfoResp, error) {
+	url := fmt.Sprintf("%s/api/v3/users/%s/repos", c.cfg.GitBucket.URL, owner)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "token "+c.cfg.GitBucket.APIKey)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("gitbucket API returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var repos []RepositoryInfoResp
+	if err := json.Unmarshal(body, &repos); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal repositories: %w", err)
+	}
+
+	return repos, nil
+}

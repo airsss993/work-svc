@@ -162,3 +162,26 @@ func (g *GitBucketService) GetCommitsList(ctx context.Context, owner, repo strin
 
 	return result, nil
 }
+
+func (g *GitBucketService) GetUserRepositories(ctx context.Context, owner string) (domain.UserRepositoriesResp, error) {
+	if owner == "" {
+		return domain.UserRepositoriesResp{}, fmt.Errorf("owner is required")
+	}
+
+	repos, err := g.gitbucketClient.GetUserRepositories(ctx, owner)
+	if err != nil {
+		return domain.UserRepositoriesResp{}, fmt.Errorf("failed to get user repositories: %w", err)
+	}
+
+	var repositories []domain.RepositoryInfo
+	for _, repo := range repos {
+		repositories = append(repositories, domain.RepositoryInfo{
+			Name: repo.Name,
+		})
+	}
+
+	return domain.UserRepositoriesResp{
+		Count:        len(repositories),
+		Repositories: repositories,
+	}, nil
+}
