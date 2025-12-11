@@ -33,8 +33,8 @@ func NewGitBucketClient(cfg *config.Config) *GitBucketClient {
 	}
 }
 
-func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, path string) ([]RepositoryContentResp, error) {
-	baseURL := fmt.Sprintf("%s/api/v3/repos/%s/Work/contents", c.cfg.GitBucket.URL, owner)
+func (c *GitBucketClient) GetRepositoryContent(ctx context.Context, owner, repo, path string) ([]RepositoryContentResp, error) {
+	baseURL := fmt.Sprintf("%s/api/v3/repos/%s/%s/contents", c.cfg.GitBucket.URL, owner, repo)
 
 	if path != "" {
 		baseURL = baseURL + "/" + path

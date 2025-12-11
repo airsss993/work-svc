@@ -21,9 +21,14 @@ func (h *Handler) getRepoContent(c *gin.Context) {
 		return
 	}
 
+	repo := c.Param("repo")
+	if repo == "" {
+		repo = "Work"
+	}
+
 	path := c.Query("path")
 
-	content, err := h.services.GitBucketService.GetRepositoryContent(c.Request.Context(), owner, path)
+	content, err := h.services.GitBucketService.GetRepositoryContent(c.Request.Context(), owner, repo, path)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

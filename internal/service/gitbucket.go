@@ -24,12 +24,16 @@ func NewGitBucketService(gitbucketClient *client.GitBucketClient, cfg *config.Co
 	}
 }
 
-func (g *GitBucketService) GetRepositoryContent(ctx context.Context, owner, path string) (domain.RepoContent, error) {
+func (g *GitBucketService) GetRepositoryContent(ctx context.Context, owner, repo, path string) (domain.RepoContent, error) {
 	if owner == "" {
 		return domain.RepoContent{}, fmt.Errorf("owner is required")
 	}
 
-	content, err := g.gitbucketClient.GetRepositoryContent(ctx, owner, path)
+	if repo == "" {
+		repo = "Work"
+	}
+
+	content, err := g.gitbucketClient.GetRepositoryContent(ctx, owner, repo, path)
 	if err != nil {
 		return domain.RepoContent{}, fmt.Errorf("failed to get repository content: %w", err)
 	}
@@ -59,7 +63,7 @@ func (g *GitBucketService) GetRepositoryContent(ctx context.Context, owner, path
 }
 
 func (g *GitBucketService) GetRepositoryContentWithDates(ctx context.Context, owner, repo, path string) (domain.RepoContent, error) {
-	repoContent, err := g.gitbucketClient.GetRepositoryContent(ctx, owner, path)
+	repoContent, err := g.gitbucketClient.GetRepositoryContent(ctx, owner, repo, path)
 	if err != nil {
 		logger.Error(fmt.Errorf("GetRepositoryContent failed for %s/%s path=%s: %w", owner, repo, path, err))
 		return domain.RepoContent{}, fmt.Errorf("failed to get repo content: %w", err)
