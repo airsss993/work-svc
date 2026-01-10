@@ -9,7 +9,7 @@ import (
 func (h *Handler) corsMiddleware(c *gin.Context) {
 	allowedOrigins := map[string]bool{
 		h.cfg.App.WebURL:                      true,
-		"http://localhost:5172":               true,
+		"http://10.3.0.112:5172":              true,
 		"https://work.students.it-college.ru": true,
 		"http://work.students.it-college.ru":  true,
 	}

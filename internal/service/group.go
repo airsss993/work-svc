@@ -53,7 +53,7 @@ func (s *GroupServiceImpl) GetITGroups(ctx context.Context) ([]domain.GroupInfo,
 
 	baseDN := "dc=it-college,dc=ru"
 	searchRequest := ldap.NewSearchRequest(
-		fmt.Sprintf("ou=groups,%s", baseDN),
+		fmt.Sprintf("ou=Current,%s", baseDN),
 		ldap.ScopeWholeSubtree,
 		ldap.NeverDerefAliases,
 		0,
@@ -116,7 +116,7 @@ func (s *GroupServiceImpl) GetGroupStudents(ctx context.Context, groupName strin
 
 	groupFilter := fmt.Sprintf("(&(|(objectClass=group)(objectClass=groupOfNames)(objectClass=posixGroup))(cn=%s))", ldap.EscapeFilter(groupName))
 	groupSearchRequest := ldap.NewSearchRequest(
-		fmt.Sprintf("ou=groups,%s", baseDN),
+		fmt.Sprintf("ou=Current,%s", baseDN),
 		ldap.ScopeWholeSubtree,
 		ldap.NeverDerefAliases,
 		0,
