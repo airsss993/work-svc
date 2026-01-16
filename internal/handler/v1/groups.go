@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/airsss993/work-svc/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,7 +33,17 @@ func (h *Handler) getGroupStudents(c *gin.Context) {
 		return
 	}
 
-	students, err := h.services.GroupService.GetGroupStudents(c.Request.Context(), groupName)
+	ctx := c.Request.Context()
+	subgroup := c.Query("subgroup")
+
+	var students []domain.Student
+	var err error
+
+	if subgroup != "" {
+		students, err = h.services.GroupService.GetGroupStudentsFiltered(ctx, groupName, subgroup)
+	} else {
+		students, err = h.services.GroupService.GetGroupStudents(ctx, groupName)
+	}
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -45,4 +56,26 @@ func (h *Handler) getGroupStudents(c *gin.Context) {
 		"students": students,
 		"total":    len(students),
 	})
+}
+
+func (h *Handler) getGroupSubgroups(c *gin.Context) {
+	groupName := c.Param("groupName")
+
+	if groupName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "group name is required",
+		})
+		return
+	}
+
+	subgroups, err := h.services.GroupService.GetGroupSubgroups(c.Request.Context(), groupName)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, subgroups)
 }

@@ -34,6 +34,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		{
 			groups.GET("/it", h.getITGroups)
 			groups.GET("/:groupName/students", h.getGroupStudents)
+			groups.GET("/:groupName/subgroups", h.getGroupSubgroups)
 		}
 
 		repository := v1.Group("/repos")
